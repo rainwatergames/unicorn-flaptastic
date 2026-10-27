@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- UNICORN FLAP-TASTIC! v0.1 — A Rainwater Games production. © 2026 Rainwater Games (Jeff Rainwater). All rights reserved. -->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="author" content="Rainwater Games - Jeff Rainwater">
+<meta name="description" content="UNICORN FLAP-TASTIC! — an over-the-top silly rainbow unicorn flapper by Rainwater Games.">
+<meta name="theme-color" content="#ff4fd8"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Unicorn Flap-tastic! — Rainwater Games</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#c9a8ff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:"Trebuchet MS",system-ui,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none}
+#splash{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .5s;
+ background:linear-gradient(180deg,#7fd8ff,#c9a8ff 50%,#ffa8e0)}
+#splash.gone{opacity:0;pointer-events:none}
+.sp-t{font-weight:bold;letter-spacing:.3em;color:#fff;font-size:15px;text-shadow:0 2px 0 #7a2a8a,0 0 12px #ff4fd8}
+.horn{font-size:64px;animation:hb 0.8s infinite ease-in-out}@keyframes hb{50%{transform:translateY(-12px) rotate(8deg) scale(1.1)}}
+.dots{display:flex;gap:10px}.dots i{width:14px;height:14px;border-radius:50%;animation:d .9s infinite ease-in-out;box-shadow:0 0 10px #fff}
+.dots i:nth-child(1){background:#ff2d55}.dots i:nth-child(2){background:#ff8a00;animation-delay:.1s}.dots i:nth-child(3){background:#ffe600;animation-delay:.2s}
+.dots i:nth-child(4){background:#2ee66b;animation-delay:.3s}.dots i:nth-child(5){background:#1fb6ff;animation-delay:.4s}.dots i:nth-child(6){background:#7a5cff;animation-delay:.5s}
+@keyframes d{0%,100%{transform:translateY(0) scale(.8);opacity:.6}50%{transform:translateY(-16px) scale(1.15);opacity:1}}
+#mute{display:none;position:fixed;z-index:10;top:max(10px,env(safe-area-inset-top));right:10px;width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#ff4fd8;font-size:20px;line-height:1;box-shadow:0 3px 0 #7a2a8a;cursor:pointer;padding:0}
+</style></head><body>
+<div id="splash"><div class="horn">🦄</div><div class="sp-t">RAINWATER GAMES</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sp-t" style="font-size:11px">LOADING SPARKLES</div></div>
+<canvas id="c"></canvas>
+<button id="mute" aria-label="Mute">🔊</button>
+<script src="game.js?v=0.1"></script>
+</body></html>
