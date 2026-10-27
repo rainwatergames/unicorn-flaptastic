@@ -1,6 +1,6 @@
 /*! UNICORN FLAP-TASTIC! — © 2026 Rainwater Games (Jeff Rainwater). All rights reserved. */
 // Network-first that bypasses the HTTP cache (GitHub Pages sends max-age=600) so new deploys show up on first open; cache is offline fallback only.
-const V='0.3.3';const C='uflap-v'+V;
+const V='1.0';const C='uflap-v'+V;
 const F=['./','index.html','game.js?v='+V,'install.js?v='+V,'manifest.webmanifest','icon-192.png','icon-512.png','fonts/LilitaOne-Regular.ttf'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F.map(u=>new Request(u,{cache:'no-cache'})))).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>{const old=k.filter(x=>x!==C);return Promise.all(old.map(x=>caches.delete(x))).then(()=>self.clients.claim()).then(()=>{
