@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- UNICORN FLAP-TASTIC! v0.1 — A Rainwater Games production. © 2026 Rainwater Games (Jeff Rainwater). All rights reserved. -->
+<!-- UNICORN FLAP-TASTIC! v0.2 — A Rainwater Games production. © 2026 Rainwater Games (Jeff Rainwater). All rights reserved. -->
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="author" content="Rainwater Games - Jeff Rainwater">
@@ -22,9 +22,9 @@ canvas{display:block;touch-action:none}
 .dots i:nth-child(4){background:#2ee66b;animation-delay:.3s}.dots i:nth-child(5){background:#1fb6ff;animation-delay:.4s}.dots i:nth-child(6){background:#7a5cff;animation-delay:.5s}
 @keyframes d{0%,100%{transform:translateY(0) scale(.8);opacity:.6}50%{transform:translateY(-16px) scale(1.15);opacity:1}}
 #mute{display:none;position:fixed;z-index:10;top:max(10px,env(safe-area-inset-top));right:10px;width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#ff4fd8;font-size:20px;line-height:1;box-shadow:0 3px 0 #7a2a8a;cursor:pointer;padding:0}
-</style></head><body>
+.tg{display:none;position:fixed;z-index:10;bottom:40px;transform:translateX(-50%);font:bold 10px "Trebuchet MS",sans-serif;letter-spacing:.06em;color:#fff;background:rgba(122,42,138,.75);border:2px solid #fff;border-radius:16px;padding:5px 8px;cursor:pointer;white-space:nowrap}</style></head><body>
 <div id="splash"><div class="horn">🦄</div><div class="sp-t">RAINWATER GAMES</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sp-t" style="font-size:11px">LOADING SPARKLES</div></div>
 <canvas id="c"></canvas>
-<button id="mute" aria-label="Mute">🔊</button>
-<script src="game.js?v=0.1"></script>
+<button id="mute" aria-label="Mute">🔊</button><button id="rf" class="tg" style="left:25%"></button><button id="rm" class="tg" style="left:75%"></button>
+<script src="game.js?v=0.2"></script>
 </body></html>
