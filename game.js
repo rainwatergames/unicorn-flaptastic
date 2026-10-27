@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v0.3.1
+ * UNICORN FLAP-TASTIC! (working title) v0.3.2
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='0.3.1';
+const VERSION='0.3.2';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -123,7 +123,7 @@ function spawn(){
   const types=['cane','rainbow','lolli','cupcake'];
   const p={x:G.spawnX,gy,gap,type:n<2?(n?'rainbow':'cane'):pick(types),passed:false,wob:rnd(0,TAU),gem:null,id:n};
   if(n>=1&&Math.random()<0.7){const off=(Math.random()<.5?-1:1)*rnd(0,gap/2-34)*(n<5?0.4:1);p.gem={x:p.x+PW/2,y:gy+off,got:false,kind:Math.random()<0.5?'star':'gem',ph:rnd(0,TAU)};}
-  if(n>=4&&(G.forceNuke||!p.gem&&((n-G.lastEv>=10&&Math.random()<0.12)))){G.forceNuke=false;G.lastEv=n;p.gem={x:p.x+PW/2,y:gy,got:false,kind:'nuke',ph:0};}
+  if((n>=4||G.forceNuke)&&(G.forceNuke||!p.gem&&((n-G.lastEv>=10&&Math.random()<0.12)))){G.forceNuke=false;G.lastEv=n;p.gem={x:p.x+PW/2,y:gy,got:false,kind:'nuke',ph:0};}
   G.pipes.push(p); G.n++; G.spawnX+=SPACING;
 }
 function flap(){
@@ -504,7 +504,7 @@ function mushroom(x,gy,k,a){if(k<=0||a<=0)return;cx.save();cx.globalAlpha=a*0.92
   cx.globalAlpha=1;cx.restore();}
 // world tilt (visual rotation of the play layer; tap always pushes the unicorn toward ITS up)
 function tiltTick(dt){if(G.state!=='play'||G.ev)return;const T=G.tilt;
-  if(!T){if(!G.rm&&G.score>=8&&G.n-G.lastEv>=8&&(G.forceTilt||Math.random()<dt*0.05)){const k=G.forceTilt||(Math.random()<0.4?'up':'diag');G.forceTilt=null;startTilt(k);}return;}
+  if(!T){if(G.forceTilt||!G.rm&&G.score>=8&&G.n-G.lastEv>=8&&Math.random()<dt*0.05){const k=G.forceTilt||(Math.random()<0.4?'up':'diag');G.forceTilt=null;startTilt(k);}return;}
   T.t+=dt;const tr=1.0;let a;
   if(T.t<tr)a=T.from+(T.to-T.from)*sm(T.t/tr);else if(T.t<T.dur)a=T.to;else if(T.t<T.dur+tr){if(!T.back){T.back=1;clearNear();word('PHEW!',W/2,H*0.3,'#fff',30);}a=T.to*(1-sm((T.t-T.dur)/tr));}else{a=0;G.tilt=null;}
   G.tiltA=a;}
@@ -629,14 +629,14 @@ S.click=function(){if(!A.ctx)return;const t=A.ctx.currentTime;noise(t,0.04,0.8,2
 S.buy=function(){if(!A.ctx)return;const t=A.ctx.currentTime;[60,64,67,72,76,79,84].forEach((m,i)=>tone('square',mtof(m),t+i*0.06,0.14,0.12));STING.boing(t+0.45,A.sfx);};
 
 /* ---------- run bookkeeping, coins, leaderboard ---------- */
-const _reset=reset;reset=function(){_reset();G.vom=null;G.lo=null;G.fan=null;G.shots=[];G.junk=[];G.splat=[];G.clouds=[];G.frenzies=0;G.kills=0;G.dodged=0;G.nuke0=G.nukes;G.entry=null;G.runCoins=0;A.mode='main';G.uni.x=W*0.3;};
+const _reset=reset;reset=function(){_reset();G.vom=null;G.lo=null;G.fan=null;G.shots=[];G.junk=[];G.splat=[];G.clouds=[];G.frenzies=0;G.kills=0;G.dodged=0;G.nuke0=G.nukes;G.entry=null;G.runCoins=0;A.mode='main';G.testT=0;G.testNext=3;G.uni.x=W*0.3;};
 const _sf=startFrenzy;startFrenzy=function(){_sf();G.frenzies++;};
 const RANKS=['Supreme Sparkle Overlord','Grand Glitter Duke','Baroness of Bling','Rainbow Royalty','Horn-orable Knight','Sparkle Squire','Glitter Goblin'];
 function rankTitle(i){return i===0?RANKS[0]:i===1?RANKS[1]:i===2?RANKS[2]:i<5?RANKS[3]:i<10?RANKS[4]:i<15?RANKS[5]:RANKS[6];}
 function qualifies(sc){return sc>0&&(G.lb.length<20||sc>G.lb[G.lb.length-1].s);}
 const _die=die;die=function(){if(G.state!=='play')return;_die();
- const c=G.score+G.gems*2+G.frenzies*10+(G.nukes-(G.nuke0||0))*5+G.kills*3+Math.floor(G.dodged/2);G.runCoins=c;G.coins+=c;saveEco();
- if(qualifies(G.score)){const ini=String(LS.get('uf_ini','UNI')).padEnd(3,'A').slice(0,3);G.entry={l:ini.split(''),saved:false};}
+ let c=G.score+G.gems*2+G.frenzies*10+(G.nukes-(G.nuke0||0))*5+G.kills*3+Math.floor(G.dodged/2);if(TEST)c=Math.floor(c/2);G.runCoins=c;G.coins+=c;saveEco();
+ if(!TEST&&qualifies(G.score)){const ini=String(LS.get('uf_ini','UNI')).padEnd(3,'A').slice(0,3);G.entry={l:ini.split(''),saved:false};}
  G.vom=null;G.lo=null;if(G.fan){G.fan=null;}A.mode='main';};
 function saveEntry(){const e=G.entry;if(!e||e.saved)return;e.saved=true;const ini=e.l.join('');LS.set('uf_ini',ini);
  const d=new Date();const ds=(d.getMonth()+1)+'/'+d.getDate()+'/'+String(d.getFullYear()).slice(2);
@@ -760,6 +760,7 @@ function vomTick(dt){const v=G.vom;if(!v)return;v.t+=dt;const u=G.uni;
 /* ---------- moving + shooting obstacles ---------- */
 const _spawn=spawn;spawn=function(){_spawn();const p=G.pipes[G.pipes.length-1],n=p.id;p.gy0=p.gy;p.gap0=p.gap;p.ph=rnd(0,TAU);
  if(G.lo||G.fan){p.gap=Math.max(p.gap,220);if(p.gem&&p.gem.kind!=='star'&&p.gem.kind!=='gem')p.gem=null;return;}
+ if(TEST==='moving'&&!G.forceMv)G.forceMv=['slide','cannon','jaw','pin','cloud','arm'][n%6];
  const fm=G.forceMv;let kind=null;
  if(fm){kind=fm;G.forceMv=null;}else if(n>=8){const pool=n<14?['slide','jaw']:n<18?['slide','jaw','pin','arm']:['slide','jaw','pin','arm','cannon','cloud'];if(Math.random()<(n<14?0.35:0.55))kind=pick(pool);}
  if(kind){p.mv=kind;p.gy0=p.gy=clamp(p.gy,140+p.gap/2,GY-130-p.gap/2);
@@ -894,7 +895,7 @@ const _de=drawEvent;drawEvent=function(){for(const s of G.splat){cx.globalAlpha=
 
 /* ---------- main update hook ---------- */
 const _up=update;update=function(dt){_up(dt);const d=dt*G.ts;
- if(G.state==='play'){for(const p of G.pipes)mvTick(p,d);shotsTick(d);junkTick(d);vomTick(d);loTick(d);fanTick(d);
+ if(G.state==='play'){testTick(dt);for(const p of G.pipes)mvTick(p,d);shotsTick(d);junkTick(d);vomTick(d);loTick(d);fanTick(d);
   if(canBig()){if(G.forceLO||(G.score>=12&&G.n-G.lastEv>=8&&Math.random()<d*0.04)){if(startLO())G.forceLO=false;}
    else if(G.forceFan||(G.score>=18&&G.n-G.lastEv>=10&&Math.random()<d*0.03)){G.forceFan=false;startFan();}}}
  else{shotsTick(d);for(const j of G.junk){j.x+=j.vx*d*0.2;}}
@@ -904,6 +905,16 @@ YAY.push('SLAY!','NEIGH-BOMB!','HORN-TASTIC!','UNI-BELIEVABLE!','YAAAS!','HAY GI
 // don't let fart/tilt start during lights-out or fan
 const _sF=startFart;startFart=function(){if(G.lo||G.fan||G.vom){G.forceFart=false;return;}_sF();};
 const _sT=startTilt;startTilt=function(k){if(G.lo||G.fan)return;_sT(k);};
+
+/* ---------- URL test flags: ?test=fan|lights|taco|nuke|tilt|flip|fart|moving ---------- */
+const TEST=(()=>{try{const t=(new URLSearchParams(location.search).get('test')||'').toLowerCase();return ['fan','lights','taco','nuke','tilt','flip','fart','moving'].includes(t)?t:'';}catch(e){return '';}})();G.test=TEST;
+function testTick(dt){if(!TEST||TEST==='moving')return;G.testT=(G.testT||0)+dt;if(G.testT<(G.testNext||3))return;
+ G.testNext=G.testT+({fan:40,lights:30,taco:15,nuke:15}[TEST]||20);
+ if(TEST==='fan')G.forceFan=true;else if(TEST==='lights')G.forceLO=true;else if(TEST==='taco')G.forceTaco=true;else if(TEST==='nuke')G.forceNuke=true;
+ else if(TEST==='tilt')G.forceTilt='diag';else if(TEST==='flip')G.forceTilt='up';else if(TEST==='fart')G.forceFart=true;}
+const _hudT=drawHUD;drawHUD=function(){_hudT();if(!TEST)return;cx.save();const lab='TEST MODE: '+TEST.toUpperCase();cx.font='bold 11px sans-serif';const w=cx.measureText(lab).width+14;
+ cx.fillStyle='rgba(255,45,85,0.85)';rr(6,H-24,w,18,9);cx.fill();cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,13,H-15);
+ if(G.state==='over'){cx.font='bold 11px sans-serif';cx.fillText('(test run: no leaderboard, half coins)',13+w,H-15);}cx.restore();};
 G.dbg={hit:(p,u)=>hitPipe(p,u),mv:(p,dt)=>mvTick(p,dt),hz:p=>hz(p)};
 reset();
 
