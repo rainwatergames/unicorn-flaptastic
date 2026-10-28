@@ -21,7 +21,7 @@
     '.rgi-o{position:fixed;inset:0;z-index:2147483001;background:rgba(5,6,16,.82);display:none;align-items:flex-end;justify-content:center;padding:16px;font:16px/1.35 system-ui,-apple-system,sans-serif;color:#fff}.rgi-o.on{display:flex}' +
     '.rgi-c{width:100%;max-width:380px;background:#141a33;border:1px solid #ffffff2a;border-radius:22px;padding:18px 18px 14px;box-shadow:0 20px 60px #000}.rgi-c h3{margin:0 0 12px;font-size:18px}' +
     '.rgi-s{display:flex;align-items:center;gap:14px;margin:10px 0;padding:12px;border-radius:14px;background:#ffffff10}.rgi-n{flex:none;width:28px;height:28px;border-radius:50%;background:#a78bfa;color:#0b0f1e;font-weight:900;display:flex;align-items:center;justify-content:center}' +
-    '.rgi-i{flex:none;width:44px;height:44px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}.rgi-i svg{width:28px;height:28px}' +
+    '.rgi-i{flex:none;color:#111;width:44px;height:44px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}.rgi-i svg{width:28px;height:28px}' +
     '.rgi-x{display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:14px;background:#ffffff1c;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}.rgi-a{text-align:center;font-size:30px;line-height:1;margin-top:6px;animation:rgiD 1s ease-in-out infinite}@keyframes rgiD{50%{transform:translateY(6px)}}';
   var DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>';
   var SHARE = '<svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg>';
@@ -32,7 +32,8 @@
     if (!SCREENS.length) return true;
     return SCREENS.some(function (s) { var e = document.querySelector(s); return e && !e.classList.contains('hide') && !e.hidden && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden'; });
   }
-  function available() { return !done && (IOS || deferred); }
+  /* v1.2.3: always offered (unless installed); without a native prompt it opens short how-to steps instead of doing nothing */
+  function available() { return !done && !installed(); }
   function sync() {
     if (!btn) return;
     if (installed()) done = true;
@@ -40,12 +41,23 @@
     btn.lastChild.textContent = label();
   }
   function openIOS() { ov.classList.add('on'); sync(); }
+  function help() { if (ov) { ov.innerHTML = HELP(); ov.classList.add('on'); } sync(); }
   function go() {
     if (IOS) return openIOS();
-    if (!deferred) return;
+    if (!deferred) return help();
     var d = deferred; deferred = null; sync();
-    d.prompt();
-    (d.userChoice || Promise.resolve({})).then(function (c) { if (c && c.outcome === 'accepted') { done = true; } sync(); });
+    var r; try { r = d.prompt(); } catch (err) { return help(); }
+    if (r && r.catch) r.catch(function () { help(); });
+    (d.userChoice || Promise.resolve({})).then(function (c) { if (c && c.outcome === 'accepted') { done = true; } sync(); }, function () {});
+  }
+  var MENU = '<svg viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="19" r="2.2"/></svg>';
+  function HELP() {
+    var n = NAME.replace(/</g, '&lt;');
+    var s = AND ? ['<span class="rgi-i">' + MENU + '</span><span>Tap the <b>&#8942;</b> menu (top right of Chrome)</span>', '<span class="rgi-i">' + ADD + '</span><span>Tap <b>Add to Home screen</b> (or <b>Install app</b>) then <b>Install</b></span>']
+      : ['<span class="rgi-i">' + DL + '</span><span>Click the <b>install icon</b> at the right end of the address bar</span>', '<span class="rgi-i">' + MENU + '</span><span>or <b>&#8942;</b> menu → <b>Cast, save and share</b> → <b>Install</b></span>'];
+    return '<div class="rgi-c"><h3>Install ' + n + (AND ? ' on Android' : '') + '</h3>' +
+      '<div class="rgi-s"><span class="rgi-n">1</span>' + s[0] + '</div><div class="rgi-s"><span class="rgi-n">2</span>' + s[1] + '</div>' +
+      '<div style="font-size:13px;opacity:.75;margin:6px 2px">Already installed? Open it from your home screen / app list.</div><button type="button" class="rgi-x">Got it</button></div>';
   }
   function build() {
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);

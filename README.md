@@ -1,4 +1,4 @@
-# UNICORN FLAP-TASTIC! (working title) — BETA v1.2.2
+# UNICORN FLAP-TASTIC! (working title) — BETA v1.2.3
 A Rainwater Games production — an over-the-top silly, rainbow-soaked unicorn flapper. Tap anywhere to flap.
 
 Play: https://rainwatergames.github.io/unicorn-flaptastic/

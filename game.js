@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v1.2.2 BETA
+ * UNICORN FLAP-TASTIC! (working title) v1.2.3 BETA
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='1.2.2',STAGE='BETA';
+const VERSION='1.2.3',STAGE='BETA';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -186,7 +186,7 @@ function update(dt){
     u.vy+=1350*PHYS*dt; u.vy=Math.min(u.vy,620*PHYS); u.y+=u.vy*dt; if(u.y<12){u.y=12;u.vy=Math.max(u.vy,0);}
     u.rot+=(clamp(u.vy/700,-0.45,1.0)-u.rot)*Math.min(1,dt*8);
     G.bgx+=G.speed*dt;
-    G.spawnX-=G.speed*dt; while(G.spawnX<W+80)spawn();
+    G.spawnX-=G.speed*dt; {let n=0;while(G.spawnX<W+80&&n++<12)spawn();if(G.spawnX<W+80)G.spawnX=W+80+200;}
     for(const p of G.pipes){p.x-=G.speed*dt;if(p.gem)p.gem.x=p.x+PW/2;
       if(!p.passed&&p.x+PW<u.x-R){p.passed=true;addScore(1);S.ding(G.frenzy>0?1.25:1);burst(u.x+10,u.y,22);
         if(Math.random()<0.6||G.score%5===0)word(pick(YAY),u.x+rnd(20,70),u.y-rnd(30,60));
@@ -453,7 +453,8 @@ function render(){
   drawHUD();
 }
 let last=performance.now();
-function frame(now){const dt=Math.min(1/30,(now-last)/1000);last=now;update(dt);render();showToggles();requestAnimationFrame(frame);}
+// v1.2.3: the next frame is always scheduled first, so one bad frame can never freeze the whole game
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(1/30,Math.max(0,(now-last)/1000));last=now;try{update(dt);render();showToggles();}catch(err){G.frameErr=(G.frameErr||0)+1;if(G.frameErr<4)console.warn('frame recovered',err);try{cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=1;}catch(_){}}}
 /* ================= v0.2 EVENTS: RAINBOW NUKE, FOURTH-WALL FART, WORLD TILT, WEIRDOS ================= */
 function addP(k,x,y,vx,vy,life,col,s){G.parts.push({k,x,y,vx,vy,life,max:life,col:col||pick(RB),s:s||rnd(8,14),r:rnd(0,TAU),vr:rnd(-6,6)});}
 function startNuke(){G.ev={type:'nuke',t:0,boom:false};G.ts=0;G.nukes++;S.uhoh();}
@@ -1062,7 +1063,8 @@ const WN12=['CANDY LAND','STARRY SKY','RAINBOW CRYSTAL CAVE','CHROME CITY'];
 const BN12=['COTTON CANDY KING','COSMIC PUFF','CRYSTAL GUST GOLEM','CHROME BLOWER 3000'];
 const BC12=[['#ffd1ec','#ff8fd0','#ffe600'],['#3a3a8a','#6a6ad8','#fff6a0'],['#9a5cff','#5ad8ff','#ffffff'],['#c4ccd8','#7a8496','#ff4fd8']];
 function dayKey12(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
-function dailyMode12(){const d=new Date();let h=(d.getFullYear()*372+d.getMonth()*31+d.getDate())*2654435761>>>0;h^=h>>>13;return SPEC12[h%5];}
+// v1.2.3 fix: h^=h>>>13 turned h into a signed (negative) int on some days -> SPEC12[-n] was undefined -> Daily crashed every frame (looked frozen)
+function dailyMode12(){const d=new Date();let h=(d.getFullYear()*372+d.getMonth()*31+d.getDate())*2654435761>>>0;h=(h^(h>>>13))>>>0;return SPEC12[h%SPEC12.length]||'disco';}
 const TMODE12=SPEC12.includes(TEST)?TEST:'';
 G.sel=TMODE12||(TEST==='worlds'?'normal':LS.get('uf_sel','normal'));if(!SEL12.includes(G.sel))G.sel='normal';
 G.mbest=LS.get('uf_mbest',{});if(!G.mbest||typeof G.mbest!=='object')G.mbest={};
