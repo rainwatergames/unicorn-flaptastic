@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v1.1.1
+ * UNICORN FLAP-TASTIC! (working title) v1.2.0 BETA
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='1.1.1';
+const VERSION='1.2.0',STAGE='BETA';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -380,6 +380,7 @@ function drawParts(){for(const p of G.parts){const a=clamp(p.life/p.max*1.5,0,1)
 function heart(x,y,s,c){cx.fillStyle=c;cx.beginPath();cx.moveTo(x,y+s*0.9);cx.bezierCurveTo(x-s*1.6,y-s*0.2,x-s*0.6,y-s*1.3,x,y-s*0.4);cx.bezierCurveTo(x+s*0.6,y-s*1.3,x+s*1.6,y-s*0.2,x,y+s*0.9);cx.fill();}
 function duck(x,y){cx.fillStyle='#ffe600';cx.beginPath();cx.ellipse(x,y+3,11,8,0,0,TAU);cx.arc(x+6,y-6,6,0,TAU);cx.fill();cx.fillStyle='#ff8a00';cx.beginPath();cx.ellipse(x+13,y-5,4,2.2,0,0,TAU);cx.fill();cx.fillStyle='#3a1640';cx.beginPath();cx.arc(x+7,y-7,1.6,0,TAU);cx.fill();}
 function cake(x,y){cx.fillStyle='#ff9ad5';cx.beginPath();cx.moveTo(x-9,y);cx.lineTo(x+9,y);cx.lineTo(x+6,y+10);cx.lineTo(x-6,y+10);cx.fill();cx.fillStyle='#fff4fb';cx.beginPath();cx.arc(x-4,y-1,6,0,TAU);cx.arc(x+4,y-1,6,0,TAU);cx.arc(x,y-6,6,0,TAU);cx.fill();cx.fillStyle='#ff2d55';cx.beginPath();cx.arc(x,y-12,3,0,TAU);cx.fill();}
+function verTag(){const s='v'+VERSION;txt(s,12,22,14,'#fff','#4a1458',4,'left');cx.save();cx.font=`14px ${FONT}`;const x=12+cx.measureText(s).width+8;cx.font=`12px ${FONT}`;const w=cx.measureText(STAGE).width+14;cx.fillStyle='#ff4fd8';cx.strokeStyle='#4a1458';cx.lineWidth=2.5;rr(x,13,w,19,9.5);cx.fill();cx.stroke();cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(STAGE,x+7,23);cx.restore();}
 function txt(s,x,y,sz,fill,stroke,lw,align){cx.font=`${sz}px ${FONT}`;cx.textAlign=align||'center';cx.textBaseline='middle';cx.lineJoin='round';
   if(stroke){cx.strokeStyle=stroke;cx.lineWidth=lw||sz*0.18;cx.strokeText(s,x,y);}cx.fillStyle=fill;cx.fillText(s,x,y);}
 function rainbowText(s,x,y,sz,wob){cx.font=`${sz}px ${FONT}`;const w=cx.measureText(s).width;let px=x-w/2;
@@ -402,7 +403,7 @@ function drawHUD(){
     const ps=1+Math.sin(G.t*7)*0.08;cx.save();cx.translate(W/2,H*0.68);cx.scale(ps,ps);cx.fillStyle='#ff4fd8';rr(-120,-34,240,68,34);cx.fill();cx.strokeStyle='#fff';cx.lineWidth=5;cx.stroke();
     txt('TAP TO FLAP!',0,2,34,'#fff','#7a1460',6);cx.restore();
     txt('BEST: '+G.best,W/2,H*0.68+60,22,'#ffe600','#4a1458',6);
-    txt('v'+VERSION,12,22,14,'#fff','#4a1458',4,'left');
+    verTag();
     txt('Grab ★ & gems in a row for RAINBOW FRENZY!',W/2,GY-14,14,'#fff','#4a1458',4);
     copyLine();}
   if(G.state==='over'){
@@ -683,7 +684,7 @@ function drawTitle(){const by=Math.sin(G.t*2.5)*6;cx.save();cx.translate(W/2,118
  const bw=(W-40)/3;btn('shop',20+bw/2,520,bw-6,44,'SHOP','#ff4fd8',()=>{G.state='shop';G.shopSel=G.skin;});
  btn('lb',20+bw*1.5,520,bw-6,44,'TROPHIES','#7a5cff',()=>{G.state='lb';G.lbFrom='title';},15);
  btn('settings',20+bw*2.5,520,bw-6,44,'SETTINGS','#1fb6ff',()=>{G.state='settings';},15);
- txt('v'+VERSION,12,22,14,'#fff','#4a1458',4,'left');copyLine();}
+ verTag();copyLine();}
 function drawOver(){const k=clamp((G.t-G.overT)*2.2,0,1),s=k<1?(1-Math.pow(1-k,3))*bounce(1-k):1;cx.fillStyle='rgba(74,20,88,'+(0.35*k)+')';cx.fillRect(0,0,W,H);
  cx.save();cx.translate(W/2,H*0.3);cx.scale(s,s);cx.translate(-W/2,-H*0.3);const E=G.entry&&!G.entry.saved;const ph=E?370:250;
  cx.fillStyle='#fff6fd';rr(W*0.06,40,W*0.88,ph,28);cx.fill();cx.lineWidth=6;cx.strokeStyle='#ff4fd8';cx.stroke();
