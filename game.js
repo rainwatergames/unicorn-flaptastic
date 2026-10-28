@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v1.2.1 BETA
+ * UNICORN FLAP-TASTIC! (working title) v1.2.2 BETA
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='1.2.1',STAGE='BETA';
+const VERSION='1.2.2',STAGE='BETA';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -395,7 +395,7 @@ function drawHUD(){
       cx.lineWidth=10;cx.strokeStyle=G.rf?'#ff4fd8':`hsl(${(G.t*360)%360},100%,60%)`;cx.strokeRect(5,5,W-10,H-10);}
     else if(G.combo>0){for(let i=0;i<3;i++){cx.globalAlpha=i<G.combo?1:0.3;cx.fillStyle='#ffe600';starPath(W/2-24+i*24,106,9,4,5,-Math.PI/2);cx.fill();cx.strokeStyle='#4a1458';cx.lineWidth=2;cx.stroke();}cx.globalAlpha=1;}}
   if(G.banner){const b=G.banner,k=Math.min(1,b.t/0.35),s=(k<1?k*1.25:1.25-Math.min(0.25,(b.t-0.35)))*(1+Math.sin(G.t*14)*0.05);
-    cx.save();cx.translate(W/2,H*0.3);cx.rotate(Math.sin(G.t*8)*0.08);cx.scale(s,s);cx.globalAlpha=clamp((1.8-b.t)*3,0,1);rainbowText(b.text,0,0,Math.min(44,W/9),6);cx.restore();cx.globalAlpha=1;}
+    cx.save();cx.translate(W/2,bannerY13(b));cx.rotate(Math.sin(G.t*8)*0.06);cx.scale(s,s);cx.globalAlpha=clamp((1.8-b.t)*3,0,1)*0.9;rainbowText(b.text,0,0,Math.min(40,W/10),6);cx.restore();cx.globalAlpha=1;}
   if(G.state==='title'){
     const by=Math.sin(G.t*2.5)*6;cx.save();cx.translate(W/2,128+by);cx.rotate(Math.sin(G.t*1.7)*0.04);
     rainbowText('UNICORN',0,-26,Math.min(64,W/6),5);rainbowText('FLAP-TASTIC!',0,30,Math.min(52,W/7.4),5);cx.restore();
@@ -747,8 +747,8 @@ function drawSettings(){panel(40,H-80);rainbowText('SETTINGS',W/2,80,34,3);
  btn('back',W/2,H-80,140,40,'BACK','#7a5cff',back);}
 const _hud=drawHUD;drawHUD=function(){UI.btns=[];const s=G.state;
  if(s==='play'||s==='dying')_hud();
- if(s==='play'||s==='dying'){if(G.vom){txt('RAINBOW VOMIT '+Math.max(0,3-G.vom.t).toFixed(1),W/2,140,16,`hsl(${(G.t*400)%360},100%,65%)`,'#4a1458',4);}
-  if(G.fan&&G.fan.t>2.6&&G.fan.t<G.fan.end){txt('DODGE THE JUNK! '+Math.ceil(G.fan.end-G.fan.t),W/2,140,18,'#fff','#4a1458',5);}}
+ if(s==='play'||s==='dying'){if(G.vom){txt('RAINBOW VOMIT '+Math.max(0,3-G.vom.t).toFixed(1),W/2,hudY13(140),16,`hsl(${(G.t*400)%360},100%,65%)`,'#4a1458',4);}
+  if(G.fan&&G.fan.t>2.6&&G.fan.t<G.fan.end){txt('DODGE THE JUNK! '+Math.ceil(G.fan.end-G.fan.t),W/2,hudY13(140),18,'#fff','#4a1458',5);}}
  if(s==='title')drawTitle();else if(s==='over')drawOver();else if(s==='shop')drawShop();else if(s==='lb')drawLB();else if(s==='settings')drawSettings();
  if(s!=='play'&&s!=='dying')drawWords();};
 
@@ -928,7 +928,7 @@ function testTick(dt){if(!TEST||['moving','speed','missions','disco','tiny','gra
  G.testNext=G.testT+({fan:40,lights:30,taco:15,nuke:15}[TEST]||20);
  if(TEST==='fan')G.forceFan=true;else if(TEST==='lights')G.forceLO=true;else if(TEST==='taco')G.forceTaco=true;else if(TEST==='nuke')G.forceNuke=true;
  else if(TEST==='tilt')G.forceTilt='diag';else if(TEST==='flip')G.forceTilt='up';else if(TEST==='fart')G.forceFart=true;}
-const _hudT=drawHUD;drawHUD=function(){_hudT();if(G.state==='play'&&(G.runT||0)>=300&&!(G.toasts&&G.toasts.length)){const pc=Math.round((spdMul()-1)*100);cx.save();cx.font='bold 13px sans-serif';const lab='\u{1F4A8} SPEED +'+pc+'%';const w=cx.measureText(lab).width+16;cx.fillStyle='rgba(74,20,88,0.7)';rr(W-w-8,H-48,w,22,11);cx.fill();cx.fillStyle=pc>=100?'#ff4fd8':'#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,W-w,H-37);cx.restore();}if(!TEST)return;cx.save();// v1.1: tag sits above the © line; on game over the note shares the pill (no overlap)
+const _hudT=drawHUD;drawHUD=function(){_hudT();if(G.state==='play'&&(G.runT||0)>=300&&!(G.toasts&&G.toasts.length)){const pc=Math.round((spdMul()-1)*100);cx.save();cx.font='bold 13px sans-serif';const lab='\u{1F4A8} SPEED +'+pc+'%';const w=cx.measureText(lab).width+16;cx.fillStyle='rgba(74,20,88,0.7)';rr(W-w-8,H-48,w,22,11);cx.fill();cx.fillStyle=pc>=100?'#ff4fd8':'#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,W-w,H-37);cx.restore();}if(!TEST||((G.state==='play'||G.state==='dying')&&G.toasts&&G.toasts.length))return;cx.save();// v1.1: tag sits above the © line; on game over the note shares the pill (no overlap)
  const lab='TEST MODE: '+TEST.toUpperCase()+(G.state==='over'?'  (no leaderboard, half coins)':'');cx.font='bold '+(G.state==='over'?10:11)+'px sans-serif';const w=Math.min(W-12,cx.measureText(lab).width+14);const x0=G.state==='over'?(W-w)/2:6,yc=G.state==='play'||G.state==='dying'?H-15:H-42;
  cx.fillStyle='rgba(255,45,85,0.85)';rr(x0,yc-9,w,18,9);cx.fill();cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,x0+7,yc,w-14);cx.restore();};
 G.dbg={W:()=>W,tf:a=>tiltFrame(a),hit:(p,u)=>hitPipe(p,u),mv:(p,dt)=>mvTick(p,dt),hz:p=>hz(p)};
@@ -1041,14 +1041,14 @@ const _do11=drawOver;drawOver=function(){_do11();const k=clamp((G.t-G.overT)*2.2
 const _hud11=drawHUD;drawHUD=function(){_hud11();drawToasts13();};
 // v1.2.1: mission/achievement toasts stack up from the bottom (over the ground strip during play), compact + semi-transparent,
 // so they never cover the unicorn, the gates or the score.
-function toastBase13(){const pl=G.state==='play'||G.state==='dying';if(pl)return H-4-(TEST?26:0);return Math.min(H-120,532);}
+function toastBase13(){const pl=G.state==='play'||G.state==='dying';if(pl)return H-4;return Math.min(H-120,532);}
 function drawToasts13(){const n=Math.min(TV13,G.toasts.length);if(!n)return;const base=toastBase13(),th=30,gap=4;
  for(let i=0;i<n;i++){const T=G.toasts[i],a=T.life,k=clamp(Math.min(1,(T.max-a)/0.2,a/0.3),0,1);const yb=base-i*(th+gap)+(1-k)*14,y=yb-th;
   cx.save();cx.globalAlpha=k;cx.fillStyle='rgba(74,20,88,.72)';rr(10,y,W-20,th,11);cx.fill();cx.strokeStyle=T.col;cx.globalAlpha=k*0.85;cx.lineWidth=2;cx.stroke();cx.globalAlpha=k;
   let t=T.t,s=T.sub||'';cx.font=`13px ${FONT}`;while(t.length>4&&cx.measureText(t).width>W-36)t=t.slice(0,-2)+'…';cx.font=`10px ${FONT}`;while(s.length>4&&cx.measureText(s).width>W-36)s=s.slice(0,-2)+'…';
   if(s){txt(t,W/2,y+10,13,T.col,'#4a1458',3);txt(s,W/2,y+22.5,10,'#fff','#4a1458',2.5);}else txt(t,W/2,y+th/2,13,T.col,'#4a1458',3);
   glint(20,y+7,i,9);cx.restore();}}
-G.dbg.toast=toast;G.dbg.mDone=i=>mDone(MST.act[i]);
+if(TEST){G.dbg.toast=toast;G.dbg.mDone=i=>mDone(MST.act[i]);}
 // frame-time probe for tests
 const _fr11=frame;frame=function(now){const t0=performance.now();_fr11(now);const ft=performance.now()-t0;G.ft=G.ft==null?ft:G.ft*0.95+ft*0.05;};
 G.dbg.ms=MST;G.dbg.glit=()=>GP.filter(o=>o.on).length;
@@ -1208,13 +1208,45 @@ const _dt12=drawTitle;drawTitle=function(){_dt12();const M=MODES12[G.mode]||MODE
 const _hud12=drawHUD;drawHUD=function(){_hud12();if(G.state!=='play'&&G.state!=='dying')return;const M=MODES12[G.mode];let lab=G.mode==='normal'?(G.world?WN12[G.world]:''):(G.isDaily?'DAILY: ':'')+M.n;
  if(G.mode==='gravity'&&!G.tilt&&!G.rm)lab+=' · FLIP IN '+Math.max(0,Math.ceil(G.gT));
  if(lab){cx.save();cx.font='bold 10px sans-serif';const w=cx.measureText(lab).width+14;cx.fillStyle='rgba(74,20,88,.6)';rr(6,8,w,18,9);cx.fill();cx.fillStyle=G.mode==='normal'?'#fff':M.c;cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,13,17);cx.restore();}
- const b=G.boss;if(b&&b.t>2.6&&b.t<12.4)txt('SURVIVE '+BN12[b.k]+'! '+Math.ceil(12.4-b.t),W/2,128,13,BC12[b.k][2],'#4a1458',4);};
+ const b=G.boss;if(b&&b.t>2.6&&b.t<12.4)txt('SURVIVE '+BN12[b.k]+'! '+Math.ceil(12.4-b.t),W/2,hudY13(128),13,BC12[b.k][2],'#4a1458',4);};
 const _do12=drawOver;drawOver=function(){_do12();if(G.entry)return;let lab='';if(G.mode!=='normal')lab=(G.isDaily?'DAILY · ':'')+MODES12[G.mode].n+' · no leaderboard';else if(G.maxW12>0)lab='Reached '+WN12[G.world]+(G.bossN?' · bosses '+G.bossN+' (+'+(G.bossN*10)+'c)':'');
  if(lab)txt(lab,W/2,254,11,'#7a5cff','#fff',3);};
 const _dlb12=drawLB;drawLB=function(){_dlb12();const mb=G.mbest;txt('MODE BESTS  Disco '+(mb.disco||0)+' · Tiny '+(mb.tiny||0)+' · Flip '+(mb.gravity||0)+' · Gold '+(mb.gold||0)+' · Chaos '+(mb.chaos||0),W/2,H-68,9,'#fff','#4a1458',3);};
 G.dbg.p2={sel:s=>{G.sel=s;applyMode12();},daily:dailyMode12};
 reset();
 
+/* ================= v1.2.2: keep popup text off the unicorn ================= */
+// Floating words spawn ahead/above-right of the unicorn (or in a band above/below it), drift away if it flies into them,
+// and fade a little while overlapping. Big banners and HUD countdowns pick a band away from the unicorn's height.
+function uBox13(){const u=G.uni,k=G.mode==='tiny'?0.55:1;return {l:u.x-38*k,r:u.x+38*k,t:u.y-38*k,b:u.y+32*k};}
+function hit13(a,x,y,hw,hh,m){return x+hw>a.l-m&&x-hw<a.r+m&&y+hh>a.t-m&&y-hh<a.b+m;}
+function wSize13(t,sz){cx.save();cx.font=`${sz}px ${FONT}`;const w=cx.measureText(t).width;cx.restore();return {hw:w*0.6+4,hh:sz*0.62+4};}
+function inPlay13(){return G.state==='play'||G.state==='dying';}
+const _word13=word;word=function(t,x,y,col,sz){sz=sz||30;if(!inPlay13()||!G.uni)return _word13(t,x,y,col,sz);
+ sz=Math.round(sz*0.9);const b=uBox13(),u=G.uni,{hw,hh}=wSize13(t,sz),yT=104,yB=GY-12;
+ const ok=(X,Y)=>Y-hh>=yT&&Y+hh<=yB&&!hit13(b,X,Y,hw,hh,10);const cX=X=>clamp(X,hw+6,W-hw-6);
+ if(!ok(x,y)){const near=Math.abs(x-u.x)<140&&Math.abs(y-u.y)<120;const C=[];
+  if(near){C.push([cX(b.r+16+hw),u.y-hh*0.6],[cX(b.r+16+hw),b.t-14-hh],[cX(x),b.t-14-hh],[cX(b.r+16+hw),b.b+14+hh]);}
+  else C.push([x,clamp(y,yT+hh,yB-hh)]);C.push([x,b.t-16-hh],[x,b.b+16+hh]);
+  let p=C.find(c=>ok(c[0],c[1]));if(!p)p=[cX(x),u.y>H*0.45?Math.max(yT+hh,b.t-16-hh):Math.min(yB-hh,b.b+16+hh)];x=p[0];y=p[1];}
+ _word13(t,x,y,col,sz);const w=G.words[G.words.length-1];if(w){w.a=0.9;w.av=1;}};
+drawWords=function(){const b=inPlay13()&&G.uni?uBox13():null;for(const w of G.words){const k=1-w.life/w.max,s=k<0.15?k/0.15*1.25:1.25-Math.min(0.25,(k-0.15)*2);
+  let a=clamp(w.life*3,0,1)*(w.a||1)*(w.av==null?1:w.av);cx.save();cx.globalAlpha=a;
+  cx.translate(w.x,w.y);cx.rotate(w.rot+Math.sin(G.t*12)*0.05);cx.scale(s,s);txt(w.t,0,0,w.sz,w.col,'#4a1458');cx.restore();}cx.globalAlpha=1;};
+const _up13=update;update=function(dt){_up13(dt);if(!inPlay13()||!G.uni)return;const b=uBox13(),u=G.uni;
+ for(const w of G.words){const {hw,hh}=w.bb||(w.bb=wSize13(w.t,w.sz));const over=hit13(b,w.x,w.y,hw*0.9,hh*0.9,4);
+  if(over){const dir=w.y<u.y?-1:1;w.y+=dir*170*dt;if(w.x>=u.x)w.x=Math.min(W-hw-4,w.x+70*dt);}
+  let ob=false;const bn=G.banner;if(bn&&bn.y13!=null&&!G.tiltA&&bn.t<1.8&&Math.abs(w.y-bn.y13)<hh+22){ob=true;if(!over)w.y+=(w.y<bn.y13?-1:1)*60*dt;}
+  w.av=(w.av==null?1:w.av)+((over?0.55:ob?0.45:1)-(w.av==null?1:w.av))*Math.min(1,dt*10);}};
+// unicorn position in screen space (follows world tilt / upside-down)
+function uScreen13(){const u=G.uni;if(!u)return {x:W*0.3,y:H*0.42};if(!G.tiltA)return {x:u.x,y:u.y};const f=tiltFrame(G.tiltA),a=G.tiltA,dx=(u.x-f.cx)*f.z,dy=(u.y-f.cy)*f.z;
+ return {x:W/2+dx*Math.cos(a)-dy*Math.sin(a),y:H/2+dx*Math.sin(a)+dy*Math.cos(a)};}
+function bandY13(y0,hh){if(!inPlay13())return y0;const us=uScreen13().y,cu=hh+60,cd=hh+48;if(y0<=us-cu||y0>=us+cd)return y0;
+ const up=us-cu,dn=us+cd;const upOK=up>=96+hh*0.5,dnOK=dn<=GY-20-hh*0.5;
+ if(upOK&&(!dnOK||us>=y0))return Math.max(96+hh*0.5,Math.min(y0,up));if(dnOK)return dn;return y0;}
+function bannerY13(b){const tgt=bandY13(H*0.3,30);if(b.y13==null)b.y13=tgt;b.y13+=(tgt-b.y13)*Math.min(1,(G.dtLast||0.016)*8);return b.y13;}
+function hudY13(y0){return bandY13(y0,10);}
+const _up13b=update;update=function(dt){G.dtLast=dt;_up13b(dt);};
 /* ================= BOOT ================= */
 function boot(){
   const t0=performance.now();const ff=('FontFace' in window)?new FontFace('Lilita One','url(fonts/LilitaOne-Regular.ttf)').load().then(f=>document.fonts.add(f)).catch(()=>{}):Promise.resolve();
