@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v1.0
+ * UNICORN FLAP-TASTIC! (working title) v1.1
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='1.0';
+const VERSION='1.1';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -178,7 +178,7 @@ function update(dt){
   if(G.ev)evTick(dt); dt*=G.ts; G.inv=Math.max(0,G.inv-dt);
   G.t+=dt; const u=G.uni; weirdTick(dt);
   G.shake=Math.max(0,G.shake-dt*40); G.flash=Math.max(0,G.flash-dt*2.2); bounceUI=Math.max(0,bounceUI-dt*3);
-  if(G.state==='title'||G.state==='load'){G.bgx+=60*dt;u.y=H*0.47+Math.sin(G.t*3)*14;u.rot=Math.sin(G.t*3)*0.12;u.wing=(Math.sin(G.t*10)+1)/2;
+  if(G.state==='title'||G.state==='load'){G.bgx+=60*dt;u.y=H*0.535+Math.sin(G.t*3)*12;u.rot=Math.sin(G.t*3)*0.12;u.wing=(Math.sin(G.t*10)+1)/2;
     u.sq+=(1-u.sq)*Math.min(1,dt*10);if(Math.random()<dt*0.5){u.face='derp';u.faceT=0.8;}}
   if(G.state==='play'){
     const d=difficulty(); G.speed+=(d.sp-G.speed)*Math.min(1,dt*2);
@@ -677,11 +677,10 @@ function panel(y0,h){cx.fillStyle='rgba(74,20,88,.55)';cx.fillRect(0,0,W,H);cx.f
 function drawTitle(){const by=Math.sin(G.t*2.5)*6;cx.save();cx.translate(W/2,118+by);cx.rotate(Math.sin(G.t*1.7)*0.04);
  rainbowText('UNICORN',0,-26,Math.min(64,W/6),5);rainbowText('FLAP-TASTIC!',0,30,Math.min(52,W/7.4),5);cx.restore();shineSweep(20,70,W-40,100);
  txt('A Rainwater Games production',W/2,186,18,'#fff','#7a2a8a',5);coinLine(214);
- txt(skinCol().n.toUpperCase(),W/2,H*0.47+42,14,'#fff','#4a1458',4);
- const ps=1+Math.sin(G.t*7)*0.06;cx.save();cx.translate(W/2,H*0.62);cx.scale(ps,ps);cx.fillStyle='#ff4fd8';rr(-115,-30,230,60,30);cx.fill();cx.strokeStyle='#fff';cx.lineWidth=5;cx.stroke();
+ txt(skinCol().n.toUpperCase(),W/2,H*0.535+36,14,'#fff','#4a1458',4);
+ const ps=1+Math.sin(G.t*7)*0.06;cx.save();cx.translate(W/2,H*0.67);cx.scale(ps,ps);cx.fillStyle='#ff4fd8';rr(-115,-28,230,56,28);cx.fill();cx.strokeStyle='#fff';cx.lineWidth=5;cx.stroke();
  txt('TAP TO FLAP!',0,2,32,'#fff','#7a1460',6);cx.restore();
- txt('BEST: '+G.best,W/2,H*0.62+50,20,'#ffe600','#4a1458',6);
- txt('Eat the spicy glitter taco. Trust us.',W/2,H*0.62+76,13,'#fff','#4a1458',4);
+ txt('BEST: '+G.best,W/2,H*0.67+44,20,'#ffe600','#4a1458',6);
  const bw=(W-40)/3;btn('shop',20+bw/2,520,bw-6,44,'SHOP','#ff4fd8',()=>{G.state='shop';G.shopSel=G.skin;});
  btn('lb',20+bw*1.5,520,bw-6,44,'TROPHIES','#7a5cff',()=>{G.state='lb';G.lbFrom='title';},15);
  btn('settings',20+bw*2.5,520,bw-6,44,'SETTINGS','#1fb6ff',()=>{G.state='settings';},15);
@@ -721,13 +720,14 @@ function drawShop(){panel(14,H-28);rainbowText('SKIN SHOP',W/2,44,34,3);coinLine
  previewUni(px+10,py,1.0,k.id,!own);
  txt(hid?'??? SECRET ???':k.n,W/2,205,20,'#ff4fd8','#4a1458',4);wrap(hid?'Own every other skin to reveal...':k.d,W/2,230,W-70,12,'#7a2a8a');
  if(own){const eq=G.skin===k.id;btn('equip',W/2,264,150,34,eq?'EQUIPPED ✓':'EQUIP','#2ee66b',()=>{G.skin=k.id;saveEco();word('HORN-TASTIC!',W/2,150,'#2ee66b',28);},16);}
+ else if(k.ms){btn('buy',W/2,264,190,34,'UNICORN LV '+k.ms+' REWARD','#9a8aa8',()=>{word('UNLOCK WITH MISSIONS!',W/2,150,'#7ffcff',22);},14);}
  else if(!hid){const can=G.coins>=k.p;btn('buy',W/2,264,170,34,'BUY '+k.p,can?'#ff8a00':'#9a8aa8',()=>{if(G.coins<k.p){word('NEED MORE COINS!',W/2,150,'#ff2d55',22);S.uhoh();return;}
    G.coins-=k.p;G.owned.push(k.id);G.skin=k.id;saveEco();S.buy();word('YAAAS!',W/2,140,'#ffe600',44);word(pick(['SLAY!','UNI-BELIEVABLE!','HORN-TASTIC!']),W/2,190,'#ff4fd8',30);burst(W/2,150,70,true);G.flash=Math.max(G.flash,0.5);G.shake=8;},16);}
  const cols=5,cw=(W-40)/cols,ch=62;SKINS.forEach((s,i)=>{const cxp=20+(i%cols)*cw+cw/2,cyp=310+((i/cols)|0)*(ch+4);const o=G.owned.includes(s.id),sel=s.id===G.shopSel,h2=s.secret&&!o&&!goldenOK();
   UI.btns.push({id:'sk_'+s.id,x:cxp-cw/2+2,y:cyp-ch/2,w:cw-4,h:ch,fn:()=>{G.shopSel=s.id;}});
   cx.fillStyle=sel?'#ffe6fa':'#fff';rr(cxp-cw/2+2,cyp-ch/2,cw-4,ch,10);cx.fill();cx.strokeStyle=sel?'#ff4fd8':(s.id===G.skin?'#2ee66b':'#c9a8ff');cx.lineWidth=sel?4:2;cx.stroke();
   if(h2){txt('?',cxp,cyp-6,26,'#ffd700','#4a1458',4);}else{const th=thumb(s.id,!o);cx.drawImage(th,cxp+2-40,cyp-4-44+Math.sin(G.t*4+i)*2,80,80);}
-  txt(o?(s.id===G.skin?'ON':'OWN'):h2?'???':String(s.p),cxp,cyp+22,11,o?'#2ee66b':'#ff8a00','#4a1458',3);});
+  txt(o?(s.id===G.skin?'ON':'OWN'):h2?'???':s.ms?'LV'+s.ms:String(s.p),cxp,cyp+22,11,o?'#2ee66b':'#ff8a00','#4a1458',3);});
  btn('back',W/2,H-46,140,40,'BACK','#7a5cff',back);}
 function drawLB(){panel(14,H-28);rainbowText('HALL OF SPARKLE',W/2,44,28,3);txt('LOCAL TOP 20',W/2,72,13,'#7a2a8a');
  if(!G.lb.length)wrap('No legends yet. Go flap something!',W/2,200,W-80,18,'#7a2a8a');
@@ -921,10 +921,10 @@ const _sF=startFart;startFart=function(){if(G.lo||G.fan||G.vom){G.forceFart=fals
 const _sT=startTilt;startTilt=function(k){if(G.lo||G.fan)return;_sT(k);};
 
 /* ---------- URL test flags: ?test=fan|lights|taco|nuke|tilt|flip|fart|moving ---------- */
-const TEST=(()=>{try{const t=(new URLSearchParams(location.search).get('test')||'').toLowerCase();return ['fan','lights','taco','nuke','tilt','flip','fart','moving','speed'].includes(t)?t:'';}catch(e){return '';}})();G.test=TEST;
+const TEST=(()=>{try{const t=(new URLSearchParams(location.search).get('test')||'').toLowerCase();return ['fan','lights','taco','nuke','tilt','flip','fart','moving','speed','missions'].includes(t)?t:'';}catch(e){return '';}})();G.test=TEST;
 function speedTick(d){G.runT=(G.runT||0)+d;const M=spdMul(),ms=[[1,'SPEED MODE: ACTIVATED \u{1F984}\u{1F4A8}','#ff2d55'],[1.25,'+25%! HOLD YOUR HORN!','#ff8a00'],[1.5,'+50%! MANE-IAC MODE!','#ffe600'],[2,'LUDICROUS SPEED! \u{1F680}','#ff4fd8']];
  const i=G.spdMs||0;if(i<ms.length&&G.runT>=300&&M>=ms[i][0]){word(ms[i][1],W/2,H*0.26,ms[i][2],i===3?32:24);if(i===0||i===3)G.flash=Math.max(G.flash,G.rf?0.1:0.4);G.spdMs=i+1;}}
-function testTick(dt){if(!TEST||TEST==='moving'||TEST==='speed')return;G.testT=(G.testT||0)+dt;if(G.testT<(G.testNext||3))return;
+function testTick(dt){if(!TEST||TEST==='moving'||TEST==='speed'||TEST==='missions')return;G.testT=(G.testT||0)+dt;if(G.testT<(G.testNext||3))return;
  G.testNext=G.testT+({fan:40,lights:30,taco:15,nuke:15}[TEST]||20);
  if(TEST==='fan')G.forceFan=true;else if(TEST==='lights')G.forceLO=true;else if(TEST==='taco')G.forceTaco=true;else if(TEST==='nuke')G.forceNuke=true;
  else if(TEST==='tilt')G.forceTilt='diag';else if(TEST==='flip')G.forceTilt='up';else if(TEST==='fart')G.forceFart=true;}
@@ -932,6 +932,117 @@ const _hudT=drawHUD;drawHUD=function(){_hudT();if(G.state==='play'&&(G.runT||0)>
  cx.fillStyle='rgba(255,45,85,0.85)';rr(6,H-24,w,18,9);cx.fill();cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,13,H-15);
  if(G.state==='over'){cx.font='bold 11px sans-serif';cx.fillText('(test run: no leaderboard, half coins)',13+w,H-15);}cx.restore();};
 G.dbg={W:()=>W,tf:a=>tiltFrame(a),hit:(p,u)=>hitPipe(p,u),mv:(p,dt)=>mvTick(p,dt),hz:p=>hz(p)};
+reset();
+
+/* ================= v1.1: METALLIC GLITTER + MISSIONS ================= */
+// --- glow sprites (pre-rendered, cheap drawImage instead of shadowBlur) ---
+const GCOL=['#ffffff','#ffd700','#ff9ae6','#9ff3ff','#c9a8ff','#fff3a0'];const GSPR=GCOL.map(c=>{const [cv2,g]=mk(32,32);const rg=g.createRadialGradient(16,16,0,16,16,16);rg.addColorStop(0,c);rg.addColorStop(0.25,c+'aa');rg.addColorStop(1,c+'00');g.fillStyle=rg;g.fillRect(0,0,32,32);
+ g.fillStyle='#fff';g.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/2,q=i%2?2:15;g.lineTo(16+Math.cos(a)*q,16+Math.sin(a)*q);}g.closePath();g.fill();return cv2;});
+const UGLOW=(()=>{const [c,g]=mk(120,120);const rg=g.createRadialGradient(60,60,0,60,60,60);rg.addColorStop(0,'rgba(255,240,255,.55)');rg.addColorStop(0.4,'rgba(255,150,240,.22)');rg.addColorStop(1,'rgba(160,120,255,0)');g.fillStyle=rg;g.fillRect(0,0,120,120);return c;})();
+// --- pooled glitter particles (ring buffer = hard cap) ---
+const GN=180,GP=[];for(let i=0;i<GN;i++)GP.push({on:0,x:0,y:0,vx:0,vy:0,life:0,max:1,s:6,c:0,ph:0});let gpI=0;
+function glit(x,y,vx,vy,life,s,c){const o=GP[gpI];gpI=(gpI+1)%GN;o.on=1;o.x=x;o.y=y;o.vx=vx;o.vy=vy;o.life=o.max=life;o.s=s;o.c=c==null?(Math.random()*GCOL.length)|0:c;o.ph=Math.random()*TAU;}
+function glitBurst(x,y,n,sp){if(G.rf)n=Math.ceil(n*0.4);for(let i=0;i<n;i++){const a=rnd(0,TAU),s=rnd(40,sp||260);glit(x,y,Math.cos(a)*s,Math.sin(a)*s,rnd(0.5,1.1),rnd(5,10));}}
+function glitTick(dt){const scr=G.state==='play'?G.speed*0.5:0;for(const o of GP){if(!o.on)continue;o.life-=dt;if(o.life<=0){o.on=0;continue;}o.vx*=0.96;o.vy=o.vy*0.96+40*dt;o.x+=(o.vx-scr)*dt;o.y+=o.vy*dt;}}
+function drawGlit(){cx.save();cx.globalCompositeOperation='lighter';for(const o of GP){if(!o.on)continue;const k=o.life/o.max,tw=G.rf?1:0.55+0.45*Math.sin(G.t*22+o.ph);cx.globalAlpha=Math.min(1,k*1.6)*tw;const s=o.s*(G.rf?1:0.8+0.4*tw);cx.drawImage(GSPR[o.c],o.x-s,o.y-s,s*2,s*2);}cx.restore();cx.globalAlpha=1;}
+// --- chrome / holographic gates with moving specular sweep ---
+let CHR=null,HOLO=null;function chromeGrads(){CHR=cx.createLinearGradient(0,0,PW,0);[[0,'rgba(30,10,60,.35)'],[0.07,'rgba(255,255,255,.1)'],[0.2,'rgba(255,255,255,.7)'],[0.3,'rgba(255,255,255,.05)'],[0.62,'rgba(60,20,110,.22)'],[0.82,'rgba(255,255,255,.45)'],[0.9,'rgba(255,255,255,.05)'],[1,'rgba(30,10,60,.4)']].forEach(s=>CHR.addColorStop(s[0],s[1]));
+ HOLO=cx.createLinearGradient(0,0,PW*0.6,GY*2);for(let i=0;i<=12;i++)HOLO.addColorStop(i/12,`hsl(${(i*60)%360},100%,72%)`);}
+function chromePipe(p){if(p.dead||p.blown)return;if(!CHR)chromeGrads();const top=p.gy-p.gap/2,bot=p.gy+p.gap/2,x=p.x;cx.save();cx.beginPath();cx.rect(x,-10,PW,top+10);cx.rect(x,bot,PW,GY-bot);cx.clip();cx.translate(x,0);
+ cx.fillStyle=CHR;cx.fillRect(0,-10,PW,GY+10);
+ cx.save();cx.globalAlpha=G.rf?0.14:0.24;cx.globalCompositeOperation='overlay';const off=G.rf?0:-((G.t*90+p.id*60)%GY);cx.translate(0,off);cx.fillStyle=HOLO;cx.fillRect(0,-off-10,PW,GY+20);cx.restore();
+ if(!G.rf){const k=((G.t*0.8+p.id*0.17)%1.4)-0.2,sy=k*GY;cx.globalCompositeOperation='lighter';cx.globalAlpha=0.55;cx.fillStyle='#fff';cx.beginPath();cx.moveTo(0,sy);cx.lineTo(PW,sy-40);cx.lineTo(PW,sy-22);cx.lineTo(0,sy+18);cx.closePath();cx.fill();cx.globalAlpha=0.25;cx.beginPath();cx.moveTo(0,sy+26);cx.lineTo(PW,sy-14);cx.lineTo(PW,sy-6);cx.lineTo(0,sy+34);cx.closePath();cx.fill();}
+ cx.restore();cx.globalAlpha=1;
+ if(p.type!=='lolli'){cx.save();cx.lineCap='round';cx.globalAlpha=0.9;cx.strokeStyle='#fff';cx.lineWidth=3;cx.beginPath();cx.moveTo(x+4,top);cx.lineTo(x+PW-4,top);cx.moveTo(x+4,bot);cx.lineTo(x+PW-4,bot);cx.stroke();
+  const gl=G.rf?0.6:0.7+0.3*Math.sin(G.t*4+p.id);cx.globalAlpha=gl;cx.drawImage(GSPR[1],x+PW*((G.t*0.5+p.id*0.3)%1)-8,top-8,16,16);cx.drawImage(GSPR[3],x+PW*(1-(G.t*0.5+p.id*0.3)%1)-8,bot-8,16,16);cx.restore();}}
+const _shp11=shimmerPipe;shimmerPipe=function(p){_shp11(p);chromePipe(p);};
+// --- glinting gems + coins ---
+function glint(x,y,ph,sz){const k=((G.t*0.9+ph)%1.4);if(G.rf){cx.globalAlpha=0.7;cx.drawImage(GSPR[0],x-sz*0.4,y-sz*0.4,sz*0.8,sz*0.8);cx.globalAlpha=1;return;}if(k>0.35)return;const s=sz*Math.sin(k/0.35*Math.PI);cx.save();cx.globalCompositeOperation='lighter';cx.drawImage(GSPR[0],x-s,y-s,s*2,s*2);cx.restore();}
+const _dg11=drawGem;drawGem=function(g){_dg11(g);if(g.got||g.kind==='nuke'||g.kind==='taco')return;glint(g.x+9,g.y+Math.sin(G.t*4+g.ph)*4-11,g.ph,14);};
+const _ci11=coinIcon;coinIcon=function(x,y,r){_ci11(x,y,r);glint(x+r*0.45,y-r*0.45,x*0.01,r*1.1);};
+// --- unicorn: bloom sprite instead of shadowBlur, sparkle trail ---
+drawUnicorn=(function(){return function(u){if(G.skinDraw){_du(u);return;}if(!G.lo){cx.save();cx.globalCompositeOperation='lighter';const s=G.rf?1:1+Math.sin(G.t*3)*0.06;cx.globalAlpha=G.rf?0.5:0.8;cx.drawImage(UGLOW,u.x-60*s,u.y-60*s,120*s,120*s);cx.restore();}
+ _du(u);if(!G.rf&&Math.sin(G.t*3)>0.8){cx.save();cx.globalCompositeOperation='lighter';cx.drawImage(GSPR[0],u.x+rnd(-14,20)-7,u.y+rnd(-30,6)-7,14,14);cx.restore();}};})();
+const _dpa2=drawParts;drawParts=function(){_dpa2();drawGlit();};
+// --- missions ---
+const MS=[
+ {id:'streak',t:'10 gates in a row, no edge bumps',g:10,run:1,c:30},
+ {id:'fan',t:'Survive a Giant Fan',g:1,c:40},
+ {id:'flip',t:'Pass 25 gates upside-down',g:25,c:50},
+ {id:'fart',t:'Fart-boost through 5 gates',g:5,c:40},
+ {id:'nopu',t:'Reach 3:00 with no power-up',g:180,run:1,c:60,time:1},
+ {id:'gems',t:'Grab 8 shinies in one run',g:8,run:1,c:30},
+ {id:'lights',t:'Survive a lights-out raccoon',g:1,c:40},
+ {id:'s25',t:'Score 25 in one run',g:25,run:1,c:25},
+ {id:'s50',t:'Score 50 in one run',g:50,run:1,c:50},
+ {id:'frenzy',t:'2 Rainbow Frenzies in one run',g:2,run:1,c:40},
+ {id:'nuke',t:'Survive a Rainbow Nuke',g:1,c:30},
+ {id:'tilt',t:'Survive a 45° tilt',g:1,c:25},
+ {id:'upside',t:'Survive an upside-down flip',g:1,c:30},
+ {id:'puke',t:'Puke-melt 3 obstacles',g:3,c:35},
+ {id:'runs',t:'Play 5 runs',g:5,c:20},
+ {id:'speed',t:'Reach SPEED MODE (5:00)',g:300,run:1,c:80,time:1},
+ {id:'coins',t:'Earn 60 coins in one run',g:60,run:1,c:40},
+ {id:'gates',t:'Pass 100 gates (total)',g:100,c:40},
+ {id:'dodge',t:'Dodge 10 flying things in a run',g:10,run:1,c:30}];
+const MQ=['s25','gates','gems','nopu','runs','streak','speed','s50'];// quick set for ?test=missions
+const MKEY=TEST==='missions'?'uf_ms_test':'uf_ms';
+const MST=LS.get(MKEY,null)||{act:[],done:0};
+function mDef(id){return MS.find(m=>m.id===id);}
+function mGoal(m){return TEST==='missions'?(m.time?8:Math.min(m.g,2)):m.g;}
+function mPick(){const have=MST.act.map(a=>a.id).concat(MST.last||[]);const pool=MS.filter(m=>!have.includes(m.id)&&(TEST!=='missions'||MQ.includes(m.id)));const m=pick(pool.length?pool:MS);return {id:m.id,p:0};}
+function mFill(){MST.act=MST.act.filter(a=>mDef(a.id));while(MST.act.length<3)MST.act.push(mPick());LS.set(MKEY,MST);}
+mFill();
+function uLevel(){return 1+Math.floor(MST.done/3);}
+G.toasts=[];function toast(t,sub,col){G.toasts.push({t,sub,col:col||'#ffd700',life:2.8});}
+function mDone(a){const m=mDef(a.id);const pay=TEST?Math.floor(m.c/2):m.c;G.coins+=pay;saveEco();const lv0=uLevel();MST.done++;MST.last=[a.id];
+ toast('MISSION COMPLETE! +'+pay,m.t);S.gem&&S.gem();if(G.state==='play'||G.state==='dying')glitBurst(G.uni.x,G.uni.y,40,320);
+ MST.act[MST.act.indexOf(a)]=mPick();const lv=uLevel();
+ if(lv>lv0){toast('UNICORN LEVEL '+lv+'!','Mission set complete \u2728','#7ffcff');for(const k of SKINS)if(k.ms&&k.ms<=lv&&!G.owned.includes(k.id)){if(TEST){toast('(test) would unlock '+k.n,'',' #ff9ae6'.trim());}else{G.owned.push(k.id);saveEco();toast('NEW SKIN: '+k.n.toUpperCase()+'!','Find it in the shop','#ff9ae6');}}}
+ LS.set(MKEY,MST);}
+function mSet(id,v){for(const a of MST.act.slice())if(a.id===id){if(v>a.p){a.p=v;if(a.p>=mGoal(mDef(id)))mDone(a);}}}
+function mAdd(id,n){for(const a of MST.act.slice())if(a.id===id){a.p+=n;if(a.p>=mGoal(mDef(id)))mDone(a);}}
+function mSave(){LS.set(MKEY,MST);}
+// mission-only skins (unlocked by Unicorn Level, never buyable)
+SKINS.push(
+ {id:'chrome',n:'Chrome-corn',p:0,ms:2,d:'Mission reward (Level 2). Polished to a mirror shine.',b:'#e9eef5',l:'#5a6478',m:['#ffffff','#b8c4d6','#7a869a'],h:['#ffffff','#dfe7f2'],tr:['#ffffff','#c9d3e3','#9aa6ba'],fs:['sine',520,2]},
+ {id:'holo',n:'Holo-corn',p:0,ms:4,d:'Mission reward (Level 4). Shifts every color at once.',b:'#f0e8ff',l:'#7a5cff',m:['#7ffcff','#ff9ae6','#c9a8ff','#fff6a0'],h:['#7ffcff','#fff'],tr:['#7ffcff','#ff9ae6','#c9a8ff','#fff6a0'],fs:['triangle',640,1.6]},
+ {id:'glitter',n:'Glitterbomb-corn',p:0,ms:6,d:'Mission reward (Level 6). Leaves glitter EVERYWHERE.',b:'#ffe9f7',l:'#c2338f',m:['#ffd700','#ff4fd8','#ffffff'],h:['#ffd700','#fff'],tr:['#ffd700','#ff4fd8','#ffffff'],fs:['square',700,1.4]});
+SKINS.forEach(k=>{k.hf=k.hf||'#ff4fd8';k.sp=k.sp||'rgba(255,255,255,.35)';k.sn=k.sn||'#ffd0ea';k.h=k.h||['#ffd21f','#fff6a0'];});
+goldenOK=function(){return SKINS.every(k=>k.secret||k.ms||G.owned.includes(k.id));};
+// run tracking
+const _rs11=reset;reset=function(){_rs11();if(typeof MST==='undefined')return;for(const a of MST.act)if(mDef(a.id).run)a.p=0;G.streak=0;G.gotPU=0;G.pv={gems:0,kills:0,ev:null,fan:null,lo:null,tilt:null,inv:0};G.fartT=0;G.toasts=G.toasts||[];};
+const _die11=die;die=function(){const was=G.state==='play';_die11();if(!was)return;mAdd('runs',1);mSet('coins',G.runCoins);mSave();};
+const _up11=update;update=function(dt){_up11(dt);const d=dt*G.ts,u=G.uni;glitTick(dt);
+ for(const t of G.toasts)t.life-=dt;if(G.toasts.length&&G.toasts[0].life<=0)G.toasts.shift();
+ if(G.state==='play'||G.state==='title'){const K=skinCol(),rate=(G.rf?12:34)*(K.ms?2:1);G.gAcc=(G.gAcc||0)+rate*dt;while(G.gAcc>=1){G.gAcc--;glit(u.x-16+rnd(-4,4),u.y+rnd(-6,10),rnd(-70,-15),rnd(-30,30),rnd(0.45,0.9),rnd(4,8));}}
+ if(G.state!=='play')return;const pv=G.pv||(G.pv={});
+ if(u.y<=12.5||u.y+R>=GY-0.5)G.streak=0;
+ if(pv.ev&&pv.ev.type==='fart'&&!G.ev)G.fartT=1.2;G.fartT=Math.max(0,(G.fartT||0)-d);
+ for(const p of G.pipes){if(p.passed&&!p.gl){p.gl=1;glitBurst(p.x+PW,p.gy,26,280);G.streak=(G.streak||0)+1;mSet('streak',G.streak);
+   if(Math.abs(Math.abs(G.tiltA||0)-Math.PI)<0.35)mAdd('flip',1);if(G.fartT>0)mAdd('fart',1);mAdd('gates',1);mSet('s25',G.score);mSet('s50',G.score);}}
+ if(G.gems>(pv.gems||0)){glitBurst(u.x+10,u.y,30,320);G.gotPU=1;mSet('gems',G.gems);}pv.gems=G.gems;
+ if(G.ev&&G.ev.type==='nuke'||G.vom||G.frenzy>0)G.gotPU=1;
+ if(!G.gotPU)mSet('nopu',G.runT||0);mSet('speed',G.runT||0);mSet('frenzy',G.frenzies||0);mSet('dodge',G.dodged||0);
+ if((G.kills||0)>(pv.kills||0))mAdd('puke',G.kills-(pv.kills||0));pv.kills=G.kills||0;
+ if(pv.ev&&pv.ev.type==='nuke'&&!G.ev)mAdd('nuke',1);if(pv.fan&&!G.fan)mAdd('fan',1);if(pv.lo&&!G.lo)mAdd('lights',1);
+ if(pv.tilt&&!G.tilt)mAdd(pv.tilt.kind==='up'?'upside':'tilt',1);
+ pv.ev=G.ev;pv.fan=G.fan;pv.lo=G.lo;pv.tilt=G.tilt;};
+// mission UI
+function missionRows(x0,y0,w,compact){const lv=uLevel(),inL=MST.done%3;cx.save();cx.fillStyle='rgba(74,20,88,.62)';rr(x0,y0,w,compact?74:78,14);cx.fill();cx.strokeStyle='rgba(255,215,0,.85)';cx.lineWidth=2;cx.stroke();
+ txt('MISSIONS',x0+10,y0+12,13,'#ffd700','#4a1458',3,'left');txt('UNICORN LV '+lv,x0+w-46,y0+12,12,'#7ffcff','#4a1458',3,'right');
+ for(let i=0;i<3;i++){cx.fillStyle=i<inL?'#ffd700':'rgba(255,255,255,.3)';starPath(x0+w-34+i*12,y0+12,5,2.2,5,-Math.PI/2);cx.fill();}
+ MST.act.forEach((a,i)=>{const m=mDef(a.id),g=mGoal(m),y=y0+30+i*17,p=Math.min(a.p,g);const pr=m.time?(Math.floor(p/60)+':'+String(Math.floor(p%60)).padStart(2,'0')):(p|0)+'/'+g;
+  cx.fillStyle='rgba(255,255,255,.18)';rr(x0+8,y-7,w-16,14,7);cx.fill();cx.fillStyle='rgba(255,79,216,.55)';rr(x0+8,y-7,Math.max(14,(w-16)*p/g),14,7);cx.fill();
+  txt(m.t,x0+14,y,11,'#fff','#4a1458',3,'left');txt(pr+'  +'+(TEST?Math.floor(m.c/2):m.c),x0+w-12,y,11,'#ffe600','#4a1458',3,'right');});cx.restore();}
+const _dt11=drawTitle;drawTitle=function(){_dt11();missionRows(12,226,W-24);};
+const _do11=drawOver;drawOver=function(){_do11();const k=clamp((G.t-G.overT)*2.2,0,1);if(k<1||(G.entry&&!G.entry.saved))return;missionRows(W*0.06,300,W*0.88);};
+const _hud11=drawHUD;drawHUD=function(){_hud11();const T=G.toasts[0];if(!T)return;const a=T.life,k=Math.min(1,(2.8-a)/0.25,a/0.3);cx.save();cx.globalAlpha=clamp(k,0,1);const y=140-(1-clamp(k,0,1))*30;
+ cx.fillStyle='rgba(74,20,88,.88)';rr(16,y-20,W-32,T.sub?44:32,16);cx.fill();cx.strokeStyle=T.col;cx.lineWidth=3;cx.stroke();txt(T.t,W/2,y-4,16,T.col,'#4a1458',4);if(T.sub)txt(T.sub,W/2,y+13,11,'#fff','#4a1458',3);
+ glint(28,y-12,0,12);cx.restore();};
+// frame-time probe for tests
+const _fr11=frame;frame=function(now){const t0=performance.now();_fr11(now);const ft=performance.now()-t0;G.ft=G.ft==null?ft:G.ft*0.95+ft*0.05;};
+G.dbg.ms=MST;G.dbg.glit=()=>GP.filter(o=>o.on).length;
 reset();
 
 /* ================= BOOT ================= */
