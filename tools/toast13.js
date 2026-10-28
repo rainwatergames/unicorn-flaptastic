@@ -1,0 +1,13 @@
+const p=require('puppeteer-core');const B=process.env.URL;const SH=process.env.SH;const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{const errs=[];const b=await p.launch({executablePath:'/usr/bin/google-chrome',args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+try{const pg=await b.newPage();pg.on('console',m=>{if(m.type()==='error')errs.push(m.text())});pg.on('pageerror',e=>errs.push('PE '+e.message));pg.on('requestfailed',r=>errs.push('RF '+r.url()));
+await pg.setViewport({width:412,height:915,isMobile:true,hasTouch:true,deviceScaleFactor:1});
+const vj=await (await pg.goto(B+'version.json?t='+Date.now())).text();
+await pg.goto(B+(process.env.Q||'?nc='+Date.now()),{waitUntil:'networkidle2'});await pg.waitForFunction(()=>window.__UF&&__UF.state==='title',{timeout:30000});await sleep(1200);
+await pg.screenshot({path:SH+'title.png'});
+await pg.touchscreen.tap(206,600);await pg.evaluate(()=>{__UF.auto=true;});await sleep(3000);
+const r=await pg.evaluate(()=>{const G=__UF;G.inv=5;G.dbg.ms.done=2;G.dbg.mDone(0);return {n:G.toasts.length,t:G.toasts.map(t=>t.t),state:G.state,uy:G.uni.y};});
+await sleep(450);await pg.screenshot({path:SH+'toasts-play.png'});
+const geo=await pg.evaluate(()=>{const G=__UF;return {state:G.state,n:G.toasts.length,uy:Math.round(G.uni.y),ver:document.querySelector('canvas')?1:0};});
+await sleep(2600);const after=await pg.evaluate(()=>({n:__UF.toasts.length,state:__UF.state}));await pg.screenshot({path:SH+'toasts-later.png'});
+console.log(JSON.stringify({vj,r,geo,after,errs}));}finally{await b.close();}})();

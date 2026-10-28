@@ -1,12 +1,12 @@
 /*!
- * UNICORN FLAP-TASTIC! (working title) v1.2.0 BETA
+ * UNICORN FLAP-TASTIC! (working title) v1.2.1 BETA
  * A Rainwater Games production.
  * © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
  * Unauthorized copying, modification or distribution of this game, its code or art is prohibited.
  */
 (function(){
 'use strict';
-const VERSION='1.2.0',STAGE='BETA';
+const VERSION='1.2.1',STAGE='BETA';
 const COPY='© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.';
 const FONT='"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif';
 const RB=['#ff2d55','#ff8a00','#ffe600','#2ee66b','#1fb6ff','#7a5cff','#ff4fd8'];
@@ -928,7 +928,7 @@ function testTick(dt){if(!TEST||['moving','speed','missions','disco','tiny','gra
  G.testNext=G.testT+({fan:40,lights:30,taco:15,nuke:15}[TEST]||20);
  if(TEST==='fan')G.forceFan=true;else if(TEST==='lights')G.forceLO=true;else if(TEST==='taco')G.forceTaco=true;else if(TEST==='nuke')G.forceNuke=true;
  else if(TEST==='tilt')G.forceTilt='diag';else if(TEST==='flip')G.forceTilt='up';else if(TEST==='fart')G.forceFart=true;}
-const _hudT=drawHUD;drawHUD=function(){_hudT();if(G.state==='play'&&(G.runT||0)>=300){const pc=Math.round((spdMul()-1)*100);cx.save();cx.font='bold 13px sans-serif';const lab='\u{1F4A8} SPEED +'+pc+'%';const w=cx.measureText(lab).width+16;cx.fillStyle='rgba(74,20,88,0.7)';rr(W-w-8,H-48,w,22,11);cx.fill();cx.fillStyle=pc>=100?'#ff4fd8':'#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,W-w,H-37);cx.restore();}if(!TEST)return;cx.save();// v1.1: tag sits above the © line; on game over the note shares the pill (no overlap)
+const _hudT=drawHUD;drawHUD=function(){_hudT();if(G.state==='play'&&(G.runT||0)>=300&&!(G.toasts&&G.toasts.length)){const pc=Math.round((spdMul()-1)*100);cx.save();cx.font='bold 13px sans-serif';const lab='\u{1F4A8} SPEED +'+pc+'%';const w=cx.measureText(lab).width+16;cx.fillStyle='rgba(74,20,88,0.7)';rr(W-w-8,H-48,w,22,11);cx.fill();cx.fillStyle=pc>=100?'#ff4fd8':'#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,W-w,H-37);cx.restore();}if(!TEST)return;cx.save();// v1.1: tag sits above the © line; on game over the note shares the pill (no overlap)
  const lab='TEST MODE: '+TEST.toUpperCase()+(G.state==='over'?'  (no leaderboard, half coins)':'');cx.font='bold '+(G.state==='over'?10:11)+'px sans-serif';const w=Math.min(W-12,cx.measureText(lab).width+14);const x0=G.state==='over'?(W-w)/2:6,yc=G.state==='play'||G.state==='dying'?H-15:H-42;
  cx.fillStyle='rgba(255,45,85,0.85)';rr(x0,yc-9,w,18,9);cx.fill();cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lab,x0+7,yc,w-14);cx.restore();};
 G.dbg={W:()=>W,tf:a=>tiltFrame(a),hit:(p,u)=>hitPipe(p,u),mv:(p,dt)=>mvTick(p,dt),hz:p=>hz(p)};
@@ -994,7 +994,8 @@ function mPick(){const have=MST.act.map(a=>a.id).concat(MST.last||[]);const pool
 function mFill(){MST.act=MST.act.filter(a=>mDef(a.id));while(MST.act.length<3)MST.act.push(mPick());LS.set(MKEY,MST);}
 mFill();
 function uLevel(){return 1+Math.floor(MST.done/3);}
-G.toasts=[];function toast(t,sub,col){G.toasts.push({t,sub,col:col||'#ffd700',life:2.8});}
+const TL13=2.2,TV13=2;// v1.2.1: compact bottom toasts, max 2 visible, short life
+G.toasts=[];function toast(t,sub,col){G.toasts.push({t,sub,col:col||'#ffd700',life:TL13,max:TL13});}
 function mDone(a){const m=mDef(a.id);const pay=TEST?Math.floor(m.c/2):m.c;G.coins+=pay;saveEco();const lv0=uLevel();MST.done++;MST.last=[a.id];
  toast('MISSION COMPLETE! +'+pay,m.t);S.gem&&S.gem();if(G.state==='play'||G.state==='dying')glitBurst(G.uni.x,G.uni.y,40,320);
  MST.act[MST.act.indexOf(a)]=mPick();const lv=uLevel();
@@ -1014,7 +1015,7 @@ goldenOK=function(){return SKINS.every(k=>k.secret||k.ms||G.owned.includes(k.id)
 const _rs11=reset;reset=function(){_rs11();if(typeof MST==='undefined')return;for(const a of MST.act)if(mDef(a.id).run)a.p=0;G.streak=0;G.gotPU=0;G.pv={gems:0,kills:0,ev:null,fan:null,lo:null,tilt:null,inv:0};G.fartT=0;G.toasts=G.toasts||[];};
 const _die11=die;die=function(){const was=G.state==='play';_die11();if(!was)return;mAdd('runs',1);mSet('coins',G.runCoins);mSave();};
 const _up11=update;update=function(dt){_up11(dt);const d=dt*G.ts,u=G.uni;glitTick(dt);
- for(const t of G.toasts)t.life-=dt;if(G.toasts.length&&G.toasts[0].life<=0)G.toasts.shift();
+ for(let i=0;i<Math.min(TV13,G.toasts.length);i++)G.toasts[i].life-=dt;G.toasts=G.toasts.filter(t=>t.life>0);
  if(G.state==='play'||G.state==='title'){const K=skinCol(),rate=(G.rf?12:34)*(K.ms?2:1);G.gAcc=(G.gAcc||0)+rate*dt;while(G.gAcc>=1){G.gAcc--;glit(u.x-16+rnd(-4,4),u.y+rnd(-6,10),rnd(-70,-15),rnd(-30,30),rnd(0.45,0.9),rnd(4,8));}}
  if(G.state!=='play')return;const pv=G.pv||(G.pv={});
  if(u.y<=12.5||u.y+R>=GY-0.5)G.streak=0;
@@ -1037,9 +1038,17 @@ function missionRows(x0,y0,w,compact){const lv=uLevel(),inL=MST.done%3;cx.save()
   txt(m.t,x0+14,y,11,'#fff','#4a1458',3,'left');txt(pr+'  +'+(TEST?Math.floor(m.c/2):m.c),x0+w-12,y,11,'#ffe600','#4a1458',3,'right');});cx.restore();}
 const _dt11=drawTitle;drawTitle=function(){_dt11();missionRows(12,226,W-24);};
 const _do11=drawOver;drawOver=function(){_do11();const k=clamp((G.t-G.overT)*2.2,0,1);if(k<1||(G.entry&&!G.entry.saved))return;missionRows(W*0.06,300,W*0.88);};
-const _hud11=drawHUD;drawHUD=function(){_hud11();const T=G.toasts[0];if(!T)return;const a=T.life,k=Math.min(1,(2.8-a)/0.25,a/0.3);cx.save();cx.globalAlpha=clamp(k,0,1);const y=140-(1-clamp(k,0,1))*30;
- cx.fillStyle='rgba(74,20,88,.88)';rr(16,y-20,W-32,T.sub?44:32,16);cx.fill();cx.strokeStyle=T.col;cx.lineWidth=3;cx.stroke();txt(T.t,W/2,y-4,16,T.col,'#4a1458',4);if(T.sub)txt(T.sub,W/2,y+13,11,'#fff','#4a1458',3);
- glint(28,y-12,0,12);cx.restore();};
+const _hud11=drawHUD;drawHUD=function(){_hud11();drawToasts13();};
+// v1.2.1: mission/achievement toasts stack up from the bottom (over the ground strip during play), compact + semi-transparent,
+// so they never cover the unicorn, the gates or the score.
+function toastBase13(){const pl=G.state==='play'||G.state==='dying';if(pl)return H-4-(TEST?26:0);return Math.min(H-120,532);}
+function drawToasts13(){const n=Math.min(TV13,G.toasts.length);if(!n)return;const base=toastBase13(),th=30,gap=4;
+ for(let i=0;i<n;i++){const T=G.toasts[i],a=T.life,k=clamp(Math.min(1,(T.max-a)/0.2,a/0.3),0,1);const yb=base-i*(th+gap)+(1-k)*14,y=yb-th;
+  cx.save();cx.globalAlpha=k;cx.fillStyle='rgba(74,20,88,.72)';rr(10,y,W-20,th,11);cx.fill();cx.strokeStyle=T.col;cx.globalAlpha=k*0.85;cx.lineWidth=2;cx.stroke();cx.globalAlpha=k;
+  let t=T.t,s=T.sub||'';cx.font=`13px ${FONT}`;while(t.length>4&&cx.measureText(t).width>W-36)t=t.slice(0,-2)+'…';cx.font=`10px ${FONT}`;while(s.length>4&&cx.measureText(s).width>W-36)s=s.slice(0,-2)+'…';
+  if(s){txt(t,W/2,y+10,13,T.col,'#4a1458',3);txt(s,W/2,y+22.5,10,'#fff','#4a1458',2.5);}else txt(t,W/2,y+th/2,13,T.col,'#4a1458',3);
+  glint(20,y+7,i,9);cx.restore();}}
+G.dbg.toast=toast;G.dbg.mDone=i=>mDone(MST.act[i]);
 // frame-time probe for tests
 const _fr11=frame;frame=function(now){const t0=performance.now();_fr11(now);const ft=performance.now()-t0;G.ft=G.ft==null?ft:G.ft*0.95+ft*0.05;};
 G.dbg.ms=MST;G.dbg.glit=()=>GP.filter(o=>o.on).length;
